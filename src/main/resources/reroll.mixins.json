@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "draylar.reroll.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "EnchantmentScreenHandlerAccessor",
+    "EnchantmentScreenMixin",
+    "PlayerEntityMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
