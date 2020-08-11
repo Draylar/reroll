@@ -69,12 +69,14 @@ public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
             this.client.textRenderer.drawWithShadow(matrices, expText, mouseX, mouseY, 0xffffff);
             matrices.pop();
 
-            matrices.push();
-            TranslatableText lapisText = new TranslatableText("reroll.lapis", RerollClient.getLapisPerReroll());
-            String lapisString = lapisText.getString();
-            matrices.translate(-client.textRenderer.getWidth(lapisString) / 2f, 30, 0);
-            this.client.textRenderer.drawWithShadow(matrices, lapisText, mouseX, mouseY, 0xffffff);
-            matrices.pop();
+            if(RerollClient.getLapisPerReroll() > 0) {
+                matrices.push();
+                TranslatableText lapisText = new TranslatableText("reroll.lapis", RerollClient.getLapisPerReroll());
+                String lapisString = lapisText.getString();
+                matrices.translate(-client.textRenderer.getWidth(lapisString) / 2f, 30, 0);
+                this.client.textRenderer.drawWithShadow(matrices, lapisText, mouseX, mouseY, 0xffffff);
+                matrices.pop();
+            }
         } else {
             this.client.getTextureManager().bindTexture(REROLL_TEXTURE);
             DrawableHelper.drawTexture(matrices, x, y, 0, 0, 9, 9, 9, 9);

@@ -35,7 +35,7 @@ public class RerollClient implements ClientModInitializer {
     public static int getLapisPerReroll() {
         if(cachedLapis == - 1) {
             requestData();
-            return 1;
+            return 0;
         }
 
         return cachedLapis;
