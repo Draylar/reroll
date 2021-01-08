@@ -9,8 +9,12 @@ import net.minecraft.client.gui.screen.ingame.EnchantmentScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.EnchantmentScreenHandler;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -22,14 +26,46 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.text.Format;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @Mixin(EnchantmentScreen.class)
 public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentScreenHandler> {
 
     @Unique private static final Identifier REROLL_TEXTURE = new Identifier("reroll", "textures/reroll_button.png");
     @Unique private static final Identifier REROLL_TEXTURE_IN = new Identifier("reroll", "textures/reroll_button_in.png");
 
+    // TODO: these might change while the player is in the enchanting UI.
+    @Unique private int playerLapis = 0;
+    @Unique private int playerLevels = 0;
+
     private EnchantmentScreenMixin(EnchantmentScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
+    }
+
+    @Inject(
+            method = "<init>",
+            at = @At("RETURN")
+    )
+    private void onInit(EnchantmentScreenHandler handler, PlayerInventory inventory, Text title, CallbackInfo ci) {
+        int lapis = 0;
+
+        for(int i = 0; i < inventory.size(); i++) {
+            ItemStack stack = inventory.getStack(i);
+
+            if(stack.getItem().equals(Items.LAPIS_LAZULI)) {
+                lapis+=stack.getCount();
+            }
+        }
+
+        playerLevels = inventory.player.experienceLevel;
+        playerLapis = lapis;
+
+        // Prevent delay on button first time due to packets
+        RerollClient.getLapisPerReroll();
+        RerollClient.getExpPerReroll();
     }
 
     @Inject(
@@ -46,29 +82,36 @@ public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
             this.client.getTextureManager().bindTexture(REROLL_TEXTURE_IN);
             DrawableHelper.drawTexture(matrices, x, y, 0, 0, 9, 9, 9, 9);
 
-            // first line tooltip
-            matrices.push();
-            TranslatableText tooltipText = new TranslatableText("reroll.tooltip");
-            String tooltipString = tooltipText.getString();
-            matrices.translate(-client.textRenderer.getWidth(tooltipString) / 2f, 10, 0);
-            this.client.textRenderer.drawWithShadow(matrices, tooltipText.formatted(Formatting.GRAY), mouseX, mouseY, 0xffffff);
-            matrices.pop();
+            List<Text> content = new ArrayList<>();
+            content.add(new TranslatableText("reroll.tooltip").formatted(Formatting.GRAY));
 
-            matrices.push();
-            TranslatableText expText = new TranslatableText("reroll.exp", RerollClient.getExpPerReroll());
-            String expString = expText.getString();
-            matrices.translate(-client.textRenderer.getWidth(expString) / 2f, 20, 0);
-            this.client.textRenderer.drawWithShadow(matrices, expText, mouseX, mouseY, 0xffffff);
-            matrices.pop();
+            if(RerollClient.getExpPerReroll() > 0) {
+                MutableText expPrompt = new TranslatableText("reroll.exp_prompt").formatted(Formatting.GREEN);
+                MutableText expText = new TranslatableText("reroll.exp_amount", RerollClient.getExpPerReroll());
+
+                if(playerLevels < RerollClient.getExpPerReroll()) {
+                    expText = expText.formatted(Formatting.RED);
+                } else {
+                    expText = expText.formatted(Formatting.GRAY);
+                }
+
+                content.add(expPrompt.append(expText));
+            }
 
             if(RerollClient.getLapisPerReroll() > 0) {
-                matrices.push();
-                TranslatableText lapisText = new TranslatableText("reroll.lapis", RerollClient.getLapisPerReroll());
-                String lapisString = lapisText.getString();
-                matrices.translate(-client.textRenderer.getWidth(lapisString) / 2f, 30, 0);
-                this.client.textRenderer.drawWithShadow(matrices, lapisText, mouseX, mouseY, 0xffffff);
-                matrices.pop();
+                MutableText lapisPrompt = new TranslatableText("reroll.lapis_prompt").formatted(Formatting.BLUE);
+                MutableText lapisText = new TranslatableText("reroll.lapis_amount", RerollClient.getLapisPerReroll());
+
+                if(playerLapis < RerollClient.getLapisPerReroll()) {
+                    lapisText = lapisText.formatted(Formatting.RED);
+                } else {
+                    lapisText = lapisText.formatted(Formatting.GRAY);
+                }
+
+                content.add(lapisPrompt.append(lapisText));
             }
+
+            renderTooltip(matrices, content, mouseX, mouseY);
         } else {
             this.client.getTextureManager().bindTexture(REROLL_TEXTURE);
             DrawableHelper.drawTexture(matrices, x, y, 0, 0, 9, 9, 9, 9);

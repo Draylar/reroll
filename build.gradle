@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.5.12'
+    id 'fabric-loom' version '0.5-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -19,8 +19,8 @@ dependencies {
     modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
     modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modImplementation "me.sargunvohra.mcmods:autoconfig1u:3.2.0-unstable"
-    include "me.sargunvohra.mcmods:autoconfig1u:3.2.0-unstable"
+    modImplementation "me.sargunvohra.mcmods:autoconfig1u:3.2.2"
+    include "me.sargunvohra.mcmods:autoconfig1u:3.2.2"
 }
 
 processResources {
