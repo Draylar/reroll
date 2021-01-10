@@ -1,5 +1,5 @@
 {
-  "reroll.tooltip": "Rerolls the current enchantment.",
+  "reroll.tooltip": "Reroll the enchantment list.",
 
   "reroll.exp_prompt": "Experience cost: ",
   "reroll.exp_amount": "%f Levels",
