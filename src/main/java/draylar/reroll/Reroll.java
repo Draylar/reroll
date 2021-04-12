@@ -7,7 +7,7 @@ import io.netty.buffer.Unpooled;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -22,45 +22,43 @@ public class Reroll implements ModInitializer {
     public static final Identifier DATA_REQUEST = new Identifier("reroll", "data_request");
     public static final Identifier DATA_RESPONSE = new Identifier("reroll", "data_response");
 
+    public static void reroll(PlayerEntity player) {
+        int lapisToRemove = CONFIG.lapisPerReroll;
+        int levelsPerReroll = CONFIG.levelsPerReroll;
+
+        if (player.currentScreenHandler instanceof EnchantmentScreenHandler) {
+            Inventory inventory = ((EnchantmentScreenHandlerAccessor) player.currentScreenHandler).getInventory();
+
+            int playerLevels = player.experienceLevel;
+            ItemStack lapisStack = inventory.getStack(1);
+
+            if (playerLevels > levelsPerReroll && lapisStack.getCount() > lapisToRemove) {
+                // update seed & enchantment screen
+                ((PlayerEntityManipulator) player).rerollEnchantmentSeed();
+                ((EnchantmentScreenHandlerAccessor) player.currentScreenHandler).getSeed().set(player.getEnchantmentTableSeed());
+                player.currentScreenHandler.onContentChanged(inventory);
+
+                // take cost from player
+                player.addExperienceLevels(-levelsPerReroll);
+                ItemStack newLapisStack = lapisStack.copy();
+                newLapisStack.decrement(lapisToRemove);
+                inventory.setStack(1, newLapisStack);
+            }
+        }
+    }
+
     @Override
     public void onInitialize() {
-        ServerSidePacketRegistry.INSTANCE.register(DATA_REQUEST, (context, packet) -> {
-            PlayerEntity playerEntity = context.getPlayer();
-
-            context.getTaskQueue().execute(() -> {
+        ServerPlayNetworking.registerGlobalReceiver(DATA_REQUEST, (server, player, handler, buf, responseSender) ->
+            server.execute(() -> {
                 PacketByteBuf newPacket = new PacketByteBuf(Unpooled.buffer());
                 newPacket.writeInt(CONFIG.levelsPerReroll);
                 newPacket.writeInt(CONFIG.lapisPerReroll);
-                ServerSidePacketRegistry.INSTANCE.sendToPlayer(playerEntity, DATA_RESPONSE, newPacket);
-            });
-        });
+                ServerPlayNetworking.send(player, DATA_RESPONSE, newPacket);
+            })
+        );
 
-        ServerSidePacketRegistry.INSTANCE.register(REROLL_PACKET, (context, packet) -> {
-            PlayerEntity player = context.getPlayer();
-            int lapisToRemove = CONFIG.lapisPerReroll;
-            int levelsPerReroll = CONFIG.levelsPerReroll;
-
-            context.getTaskQueue().execute(() -> {
-                if(player.currentScreenHandler instanceof EnchantmentScreenHandler) {
-                    Inventory inventory = ((EnchantmentScreenHandlerAccessor) player.currentScreenHandler).getInventory();
-
-                    int playerLevels = player.experienceLevel;
-                    ItemStack lapisStack = inventory.getStack(1);
-
-                    if(playerLevels > levelsPerReroll && lapisStack.getCount() > lapisToRemove) {
-                        // update seed & enchantment screen
-                        ((PlayerEntityManipulator) player).rerollEnchantmentSeed();
-                        ((EnchantmentScreenHandlerAccessor) player.currentScreenHandler).getSeed().set(player.getEnchantmentTableSeed());
-                        player.currentScreenHandler.onContentChanged(inventory);
-
-                        // take cost from player
-                        player.addExperienceLevels(-levelsPerReroll);
-                        ItemStack newLapisStack = lapisStack.copy();
-                        newLapisStack.decrement(lapisToRemove);
-                        inventory.setStack(1, newLapisStack);
-                    }
-                }
-            });
-        });
+        ServerPlayNetworking.registerGlobalReceiver(REROLL_PACKET, (server, player, handler, buf, responseSender) ->
+            server.execute(() -> reroll(player)));
     }
 }

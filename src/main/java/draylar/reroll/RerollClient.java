@@ -1,9 +1,8 @@
 package draylar.reroll;
 
-import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
-import net.minecraft.network.PacketByteBuf;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 
 public class RerollClient implements ClientModInitializer {
 
@@ -12,11 +11,11 @@ public class RerollClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        ClientSidePacketRegistry.INSTANCE.register(Reroll.DATA_RESPONSE, (context, packet) -> {
-            int exp = packet.readInt();
-            int lapis = packet.readInt();
+        ClientPlayNetworking.registerGlobalReceiver(Reroll.DATA_RESPONSE, (client, handler, buf, responseSender) -> {
+            int exp = buf.readInt();
+            int lapis = buf.readInt();
 
-            context.getTaskQueue().execute(() -> {
+            client.execute(() -> {
                 cachedExp = exp;
                 cachedLapis = lapis;
             });
@@ -42,6 +41,6 @@ public class RerollClient implements ClientModInitializer {
     }
 
     private static void requestData() {
-        ClientSidePacketRegistry.INSTANCE.sendToServer(Reroll.DATA_REQUEST, new PacketByteBuf(Unpooled.buffer()));
+        ClientPlayNetworking.send(Reroll.DATA_REQUEST, PacketByteBufs.create());
     }
 }
