@@ -1,0 +1,19 @@
+manifestVersion = 0
+
+[package]
+  type = "mod"
+  name = "reroll"
+  description = "Reroll Enchantment tables."
+  version = "1.2.0"
+  platform = "fabric"
+  license = "MIT"
+
+[requirements]
+  minecraft = ">=1.16"
+  fabric = ">=0.9.1+build.205"
+
+[dependencies]
+  fabric = "*"
+
+[dev]
+  buildCommand = "./gradlew build"
