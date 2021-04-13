@@ -4,7 +4,7 @@ manifestVersion = 0
   type = "mod"
   name = "reroll"
   description = "Reroll Enchantment tables."
-  version = "1.2.0"
+  version = "1.2.1"
   platform = "fabric"
   license = "MIT"
 
