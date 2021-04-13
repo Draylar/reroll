@@ -2,8 +2,8 @@ package draylar.reroll.mixin;
 
 import draylar.reroll.Reroll;
 import draylar.reroll.RerollClient;
-import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ingame.EnchantmentScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -11,9 +11,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.EnchantmentScreenHandler;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -26,9 +24,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.text.Format;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Mixin(EnchantmentScreen.class)
@@ -128,8 +124,7 @@ public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
         int y = (this.height - this.backgroundHeight) / 2 + 73;
 
         if(mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 9) {
-            PacketByteBuf packet = new PacketByteBuf(Unpooled.buffer());
-            ClientSidePacketRegistry.INSTANCE.sendToServer(Reroll.REROLL_PACKET, packet);
+            ClientPlayNetworking.send(Reroll.REROLL_PACKET, PacketByteBufs.create());
             cir.setReturnValue(true);
         }
     }
