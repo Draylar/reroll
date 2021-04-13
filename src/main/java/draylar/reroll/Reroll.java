@@ -28,6 +28,12 @@ public class Reroll implements ModInitializer {
 
         if (player.currentScreenHandler instanceof EnchantmentScreenHandler) {
             Inventory inventory = ((EnchantmentScreenHandlerAccessor) player.currentScreenHandler).getInventory();
+            ItemStack input = inventory.getStack(0);
+
+            // If the input stack does not have an item, do not reroll.
+            if(input.isEmpty()) {
+                return;
+            }
 
             int playerLevels = player.experienceLevel;
             ItemStack lapisStack = inventory.getStack(1);
