@@ -4,10 +4,10 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "EnchantmentScreenHandlerAccessor",
-    "EnchantmentScreenMixin",
     "PlayerEntityMixin"
   ],
   "client": [
+    "EnchantmentScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
