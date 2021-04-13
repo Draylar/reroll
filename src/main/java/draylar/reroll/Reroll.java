@@ -32,17 +32,19 @@ public class Reroll implements ModInitializer {
             int playerLevels = player.experienceLevel;
             ItemStack lapisStack = inventory.getStack(1);
 
-            if (playerLevels > levelsPerReroll && lapisStack.getCount() > lapisToRemove) {
+            if ((playerLevels > levelsPerReroll && lapisStack.getCount() > lapisToRemove) || player.isCreative()) {
                 // update seed & enchantment screen
                 ((PlayerEntityManipulator) player).rerollEnchantmentSeed();
                 ((EnchantmentScreenHandlerAccessor) player.currentScreenHandler).getSeed().set(player.getEnchantmentTableSeed());
                 player.currentScreenHandler.onContentChanged(inventory);
 
                 // take cost from player
-                player.addExperienceLevels(-levelsPerReroll);
-                ItemStack newLapisStack = lapisStack.copy();
-                newLapisStack.decrement(lapisToRemove);
-                inventory.setStack(1, newLapisStack);
+                if(!player.isCreative()) {
+                    player.addExperienceLevels(-levelsPerReroll);
+                    ItemStack newLapisStack = lapisStack.copy();
+                    newLapisStack.decrement(lapisToRemove);
+                    inventory.setStack(1, newLapisStack);
+                }
             }
         }
     }
