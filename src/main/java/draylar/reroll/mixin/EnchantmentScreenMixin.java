@@ -1,5 +1,6 @@
 package draylar.reroll.mixin;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import draylar.reroll.Reroll;
 import draylar.reroll.RerollClient;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -75,7 +76,7 @@ public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
         int y = (this.height - this.backgroundHeight) / 2 + 73;
 
         if(mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 9) {
-            this.client.getTextureManager().bindTexture(REROLL_TEXTURE_IN);
+            RenderSystem.setShaderTexture(0, REROLL_TEXTURE_IN);
             DrawableHelper.drawTexture(matrices, x, y, 0, 0, 9, 9, 9, 9);
 
             List<Text> content = new ArrayList<>();
@@ -109,7 +110,7 @@ public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
 
             renderTooltip(matrices, content, mouseX, mouseY);
         } else {
-            this.client.getTextureManager().bindTexture(REROLL_TEXTURE);
+            RenderSystem.setShaderTexture(0, REROLL_TEXTURE);
             DrawableHelper.drawTexture(matrices, x, y, 0, 0, 9, 9, 9, 9);
         }
     }
