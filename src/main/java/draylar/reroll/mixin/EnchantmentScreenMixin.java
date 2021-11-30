@@ -5,6 +5,7 @@ import draylar.reroll.Reroll;
 import draylar.reroll.RerollClient;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ingame.EnchantmentScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -74,7 +75,21 @@ public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
 
         int x = (this.width - this.backgroundWidth) / 2 + 160;
         int y = (this.height - this.backgroundHeight) / 2 + 73;
+        
+        RenderSystem.setShaderTexture(0, REROLL_TEXTURE);
+        DrawableHelper.drawTexture(matrices, x, y, 0, 0, 9, 9, 9, 9);
+    }
+    
+    @Inject(
+    		method = "render",
+    		at = @At("RETURN")
+    )
+    private void onRender(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        assert client != null;
 
+        int x = (this.width - this.backgroundWidth) / 2 + 160;
+        int y = (this.height - this.backgroundHeight) / 2 + 73;
+        
         if(mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 9) {
             RenderSystem.setShaderTexture(0, REROLL_TEXTURE_IN);
             DrawableHelper.drawTexture(matrices, x, y, 0, 0, 9, 9, 9, 9);
@@ -107,11 +122,8 @@ public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
 
                 content.add(lapisPrompt.append(lapisText));
             }
-
-            renderTooltip(matrices, content, mouseX, mouseY);
-        } else {
-            RenderSystem.setShaderTexture(0, REROLL_TEXTURE);
-            DrawableHelper.drawTexture(matrices, x, y, 0, 0, 9, 9, 9, 9);
+            
+            this.renderTooltip(matrices, content, x, y);
         }
     }
 
