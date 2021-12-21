@@ -59,10 +59,6 @@ public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
 
         playerLevels = inventory.player.experienceLevel;
         playerLapis = lapis;
-
-        // Prevent delay on button first time due to packets
-        RerollClient.getLapisPerReroll();
-        RerollClient.getExpPerReroll();
     }
 
     @Inject(
@@ -82,11 +78,11 @@ public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
             List<Text> content = new ArrayList<>();
             content.add(new TranslatableText("reroll.tooltip").formatted(Formatting.GRAY));
 
-            if(RerollClient.getExpPerReroll() > 0) {
+            if(Reroll.CONFIG.levelsPerReroll > 0) {
                 MutableText expPrompt = new TranslatableText("reroll.exp_prompt").formatted(Formatting.GREEN);
-                MutableText expText = new TranslatableText("reroll.exp_amount", RerollClient.getExpPerReroll());
+                MutableText expText = new TranslatableText("reroll.exp_amount", Reroll.CONFIG.levelsPerReroll);
 
-                if(playerLevels < RerollClient.getExpPerReroll()) {
+                if(playerLevels < Reroll.CONFIG.levelsPerReroll) {
                     expText = expText.formatted(Formatting.RED);
                 } else {
                     expText = expText.formatted(Formatting.GRAY);
@@ -95,11 +91,11 @@ public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
                 content.add(expPrompt.append(expText));
             }
 
-            if(RerollClient.getLapisPerReroll() > 0) {
+            if(Reroll.CONFIG.lapisPerReroll > 0) {
                 MutableText lapisPrompt = new TranslatableText("reroll.lapis_prompt").formatted(Formatting.BLUE);
-                MutableText lapisText = new TranslatableText("reroll.lapis_amount", RerollClient.getLapisPerReroll());
+                MutableText lapisText = new TranslatableText("reroll.lapis_amount", Reroll.CONFIG.lapisPerReroll);
 
-                if(playerLapis < RerollClient.getLapisPerReroll()) {
+                if(playerLapis < Reroll.CONFIG.lapisPerReroll) {
                     lapisText = lapisText.formatted(Formatting.RED);
                 } else {
                     lapisText = lapisText.formatted(Formatting.GRAY);

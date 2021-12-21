@@ -19,9 +19,6 @@
     ],
     "client": [
       "draylar.reroll.RerollClient"
-    ],
-    "modmenu": [
-      "draylar.reroll.compat.ModMenuEntrypoint"
     ]
   },
   "mixins": [
