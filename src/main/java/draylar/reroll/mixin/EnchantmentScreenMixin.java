@@ -2,6 +2,7 @@ package draylar.reroll.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import draylar.reroll.Reroll;
+import draylar.reroll.RerollClient;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.gui.DrawableHelper;
@@ -68,7 +69,7 @@ public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
         assert client != null;
 
         int x = (this.width - this.backgroundWidth) / 2 + 160;
-        int y = (this.height - this.backgroundHeight) / 2 + 73;
+        int y = (this.height - this.backgroundHeight) / 2 + 73 + RerollClient.getRerollButtonOffset();
 
         RenderSystem.setShaderTexture(0, REROLL_TEXTURE);
         DrawableHelper.drawTexture(matrices, x, y, 0, 0, 9, 9, 9, 9);
@@ -77,7 +78,7 @@ public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
     @Inject(method = "render", at = @At("RETURN"))
     private void renderHoveredReroll(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         int x = (this.width - this.backgroundWidth) / 2 + 160;
-        int y = (this.height - this.backgroundHeight) / 2 + 73;
+        int y = (this.height - this.backgroundHeight) / 2 + 73 + RerollClient.getRerollButtonOffset();
 
         if(mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 9) {
             RenderSystem.setShaderTexture(0, REROLL_TEXTURE_IN);
@@ -123,7 +124,7 @@ public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
     )
     private void onMouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         int x = (this.width - this.backgroundWidth) / 2 + 160;
-        int y = (this.height - this.backgroundHeight) / 2 + 73;
+        int y = (this.height - this.backgroundHeight) / 2 + 73 + RerollClient.getRerollButtonOffset();
 
         if(mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 9) {
             ClientPlayNetworking.send(Reroll.REROLL_PACKET, PacketByteBufs.create());

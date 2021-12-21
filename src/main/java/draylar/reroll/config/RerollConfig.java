@@ -16,6 +16,9 @@ public class RerollConfig implements Config {
     @Comment(value = "Lapis Lazuli required/consumed per reroll in an Enchantment Table.")
     public int lapisPerReroll = 0;
 
+    @Comment(value = "If true, the reroll button will be moved to above the enchant list to avoid overlapping with other mod buttons.")
+    public boolean moveButtonAboveList = false;
+
     @Override
     public String getName() {
         return "reroll";
