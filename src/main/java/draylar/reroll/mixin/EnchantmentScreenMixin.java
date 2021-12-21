@@ -2,7 +2,6 @@ package draylar.reroll.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import draylar.reroll.Reroll;
-import draylar.reroll.RerollClient;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.gui.DrawableHelper;

@@ -1,8 +1,10 @@
 package draylar.reroll.config;
 
+
 import draylar.omegaconfig.api.Comment;
 import draylar.omegaconfig.api.Config;
 import draylar.omegaconfig.api.Syncing;
+import org.jetbrains.annotations.Nullable;
 
 public class RerollConfig implements Config {
 
@@ -16,6 +18,11 @@ public class RerollConfig implements Config {
 
     @Override
     public String getName() {
+        return "reroll";
+    }
+
+    @Override
+    public @Nullable String getModid() {
         return "reroll";
     }
 

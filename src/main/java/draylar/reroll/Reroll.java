@@ -4,13 +4,11 @@ import draylar.omegaconfig.OmegaConfig;
 import draylar.reroll.config.RerollConfig;
 import draylar.reroll.impl.PlayerEntityManipulator;
 import draylar.reroll.mixin.EnchantmentScreenHandlerAccessor;
-import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.EnchantmentScreenHandler;
 import net.minecraft.util.Identifier;
 
