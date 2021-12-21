@@ -64,9 +64,18 @@ public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
             method = "drawBackground",
             at = @At("RETURN")
     )
-    private void onDrawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY, CallbackInfo ci) {
+    private void renderRerollButtonBase(MatrixStack matrices, float delta, int mouseX, int mouseY, CallbackInfo ci) {
         assert client != null;
 
+        int x = (this.width - this.backgroundWidth) / 2 + 160;
+        int y = (this.height - this.backgroundHeight) / 2 + 73;
+
+        RenderSystem.setShaderTexture(0, REROLL_TEXTURE);
+        DrawableHelper.drawTexture(matrices, x, y, 0, 0, 9, 9, 9, 9);
+    }
+
+    @Inject(method = "render", at = @At("RETURN"))
+    private void renderHoveredReroll(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         int x = (this.width - this.backgroundWidth) / 2 + 160;
         int y = (this.height - this.backgroundHeight) / 2 + 73;
 
@@ -104,9 +113,6 @@ public abstract class EnchantmentScreenMixin extends HandledScreen<EnchantmentSc
             }
 
             renderTooltip(matrices, content, mouseX, mouseY);
-        } else {
-            RenderSystem.setShaderTexture(0, REROLL_TEXTURE);
-            DrawableHelper.drawTexture(matrices, x, y, 0, 0, 9, 9, 9, 9);
         }
     }
 
